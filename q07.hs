@@ -1,27 +1,11 @@
 import Numeric
-import Data.List
+import Data.Time.Calendar
 
-padding digit pad str
-    | len > 0 = replicate len pad ++ str
-    | otherwise = str
-    where len = digit - length str
-binStrings digit = map (padding digit '0' . (`showBin` "")) [0..2^digit-1]
-palindromesInBin len
-    | even len = map (\s -> reverse s ++ s) $ binStrings $ len `div` 2
-    | otherwise = map (\s -> reverse (tail s) ++ s) $ binStrings $ 1 + len `div` 2
-lengthInBin n = length $ showBin n ""
-listDates d = map (show . fst . head . readBin) $ palindromesInBin $ lengthInBin (read d :: Int)
-takeYear = take 4
-takeMonth d = take 2 $ drop 4 d
-takeDay d = reverse $ take 2 $ reverse d
-isValidDate d1 d2 d = length d == 8 &&
-    d1 <= d && d <= d2 &&
-    "01" <= month && month <= "12" &&
-    "01" <= day && day <= "31"
-    where year = takeYear d
-          month = takeMonth d
-          day = takeDay d
-validDates d1 d2 = sort $ filter (isValidDate d1 d2) $ listDates d2
+day2str d = filter (/='-') $ show d
+str2int = fst . head . readDec
+int2bin = (`showBin` "")
+isPalindrome s = s == reverse s
+isValidDate d = isPalindrome $ int2bin $ str2int $ day2str d
 
 main = do
-    print $ validDates "19641010" "20200724"
+    print $ filter isValidDate [fromGregorian 1964 10 10..fromGregorian 2020 7 24]
